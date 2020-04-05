@@ -51,6 +51,7 @@ foreach ($config['channels'] as $category => $chanel) {
 
         $nextPageToken = $search['nextPageToken'];
 
+        // no need to spam youtube api
         sleep(1);
     }
 }
@@ -86,6 +87,11 @@ function importyt(array $config, string $category, string $id, int $date)
         $format = $backup2;
     }
 
+    // for very old videos, get any format.
+    if (!$format && !empty($data['streamingData']['formats'])) {
+        $format = $data['streamingData']['formats'][key($data['streamingData']['formats'])];
+    }
+
     $seeurl = isset($format['url']) ? $format['url'] : false;
     $mime = isset($format['mimeType']) ? $format['mimeType'] : false;
 
@@ -104,7 +110,7 @@ function importyt(array $config, string $category, string $id, int $date)
         $fileNoTmp = $file;
         $file = $file . '.tmp';
 
-        if (file_exists($fileNoTmp)) {
+        if (file_exists_in_any_ext($fileNoTmp)) {
             echo 'File alredy exists ' . $fileNoTmp . PHP_EOL;
         } else {
             @unlink($file);

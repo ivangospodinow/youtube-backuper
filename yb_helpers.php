@@ -1,5 +1,24 @@
 <?php
 
+function file_exists_in_any_ext($file)
+{
+    $exists = false;
+    $filename = pathinfo($file, PATHINFO_FILENAME);
+    $dir = new DirectoryIterator(dirname($file));
+    foreach ($dir as $fileinfo) {
+        if ($fileinfo->isDot()) {
+            continue;
+        }
+
+        if (pathinfo($fileinfo->getFilename(), PATHINFO_FILENAME) === $filename) {
+            $exists = true;
+            break;
+        }
+    }
+    unset($dir);
+    return $exists;
+}
+
 function mime2ext($mime)
 {
     $mime_map = [
